@@ -48,15 +48,15 @@ class ChatbotClient(discord.Client):
         
         final_response = ""
         
-        async with message.channel.typing():
-            async for event in self.agent.astream(inputs, config=config, stream_mode="updates"):
-                for node, data in event.items():
-                    if node == "agent":
-                        for agent_msg in data.get("messages", []):
-                            if agent_msg.content:
-                                final_response = agent_msg.content
+        async for event in self.agent.astream(inputs, config=config, stream_mode="updates"):
+            for node, data in event.items():
+                if node == "agent":
+                    for agent_msg in data.get("messages", []):
+                        if agent_msg.content:
+                            final_response = agent_msg.content
 
-            if final_response:
+        if final_response:
+            async with message.channel.typing():
                 await self.send_chunks(message.channel, final_response)
 
 def run_bot():
